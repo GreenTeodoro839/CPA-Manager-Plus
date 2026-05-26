@@ -63,6 +63,8 @@ const MANAGER_COLLECTOR_DEFAULT = {
   tlsSkipVerify: false,
 };
 
+const CONFIG_TAB_STORAGE_KEY = 'config-management:tab';
+
 // eslint-disable-next-line react-refresh/only-export-components
 export function getUsageServiceBootstrapToSync({
   serviceBase,
@@ -218,12 +220,13 @@ export function ConfigPage() {
   } = useVisualConfig();
 
   const [activeTab, setActiveTab] = useState<ConfigEditorTab>(() => {
-    const saved = localStorage.getItem('config-management:tab');
+    const saved = localStorage.getItem(CONFIG_TAB_STORAGE_KEY);
     if (saved === 'visual' || saved === 'source' || saved === 'manager') return saved;
     return 'visual';
   });
 
   const [content, setContent] = useState('');
+  const [sourceConfigLoaded, setSourceConfigLoaded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -345,6 +348,7 @@ export function ConfigPage() {
       setDiffModalOpen(false);
       setServerYaml(data);
       setMergedYaml(data);
+      setSourceConfigLoaded(true);
       loadVisualValuesFromYaml(data);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : t('notification.refresh_failed');
@@ -355,8 +359,13 @@ export function ConfigPage() {
   }, [loadVisualValuesFromYaml, t]);
 
   useEffect(() => {
-    loadConfig();
-  }, [loadConfig]);
+    if (activeTab === 'manager') {
+      setLoading(false);
+      return;
+    }
+    if (sourceConfigLoaded) return;
+    void loadConfig();
+  }, [activeTab, loadConfig, sourceConfigLoaded]);
 
   useEffect(() => {
     managerAdminKeyRef.current = managerAdminKey;
@@ -550,7 +559,7 @@ export function ConfigPage() {
     if (activeTab !== 'visual' || !visualParseError) return;
 
     setActiveTab('source');
-    localStorage.setItem('config-management:tab', 'source');
+    localStorage.setItem(CONFIG_TAB_STORAGE_KEY, 'source');
     showNotification(
       t('config_management.visual_mode_unavailable_detail', { message: visualParseError }),
       'error'
@@ -832,7 +841,13 @@ export function ConfigPage() {
 
       if (tab === 'manager') {
         setActiveTab(tab);
-        localStorage.setItem('config-management:tab', tab);
+        localStorage.setItem(CONFIG_TAB_STORAGE_KEY, tab);
+        return;
+      }
+
+      if (!sourceConfigLoaded) {
+        setActiveTab(tab);
+        localStorage.setItem(CONFIG_TAB_STORAGE_KEY, tab);
         return;
       }
 
@@ -857,7 +872,7 @@ export function ConfigPage() {
       }
 
       setActiveTab(tab);
-      localStorage.setItem('config-management:tab', tab);
+      localStorage.setItem(CONFIG_TAB_STORAGE_KEY, tab);
     },
     [
       activeTab,
@@ -865,6 +880,7 @@ export function ConfigPage() {
       content,
       loadVisualValuesFromYaml,
       showNotification,
+      sourceConfigLoaded,
       t,
       visualDirty,
     ]
