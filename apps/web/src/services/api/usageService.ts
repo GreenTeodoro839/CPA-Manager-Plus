@@ -196,6 +196,15 @@ export interface CodexInspectionRun {
   updatedAtMs: number;
 }
 
+export interface CodexInspectionQuotaWindow {
+  id: string;
+  labelKey: string;
+  labelParams?: Record<string, string | number>;
+  usedPercent?: number | null;
+  resetLabel?: string;
+  limitWindowSeconds?: number | null;
+}
+
 export interface CodexInspectionResult {
   id: number;
   runId: number;
@@ -217,6 +226,10 @@ export interface CodexInspectionResult {
   usedPercent?: number;
   isQuota: boolean;
   error?: string;
+  planType?: string | null;
+  quotaWindows?: CodexInspectionQuotaWindow[];
+  errorKind?: string;
+  errorDetail?: string;
   createdAtMs: number;
 }
 
