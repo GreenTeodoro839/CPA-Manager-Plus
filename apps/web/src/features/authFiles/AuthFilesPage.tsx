@@ -53,7 +53,7 @@ import {
   createCodexReauthTargetFromAuthFile,
   type CodexReauthTarget,
 } from '@/features/oauth/codexReauthModel';
-import { usageServiceApi, type CodexInspectionResult } from '@/services/api/usageService';
+import { usageServiceApi, type CodexInspectionResult, type QuotaCooldownInfo } from '@/services/api/usageService';
 import { useAuthFilesData } from '@/features/authFiles/hooks/useAuthFilesData';
 import { useAuthFilesModels } from '@/features/authFiles/hooks/useAuthFilesModels';
 import { useAuthFilesOauth } from '@/features/authFiles/hooks/useAuthFilesOauth';
@@ -146,6 +146,7 @@ export function AuthFilesPage() {
   const resolvedTheme: ResolvedTheme = useThemeStore((state) => state.resolvedTheme);
   const codexQuota = useQuotaStore((state) => state.codexQuota);
   const featureAvailability = usePanelFeatureAvailability();
+  const managerServiceBase = featureAvailability.managerServiceBase;
   const pageTransitionLayer = usePageTransitionLayer();
   const isCurrentLayer = pageTransitionLayer ? pageTransitionLayer.status === 'current' : true;
   const navigate = useNavigate();
@@ -175,6 +176,9 @@ export function AuthFilesPage() {
   const [lastCodexInspectionResults, setLastCodexInspectionResults] = useState<
     AuthFileCodexInspectionSnapshot[]
   >([]);
+  const [quotaCooldowns, setQuotaCooldowns] = useState<Map<string, QuotaCooldownInfo>>(
+    () => new Map()
+  );
   const floatingBatchActionsRef = useRef<HTMLDivElement>(null);
   const batchActionAnimationRef = useRef<AnimationPlaybackControlsWithThen | null>(null);
   const previousSelectionCountRef = useRef(0);
@@ -505,6 +509,39 @@ export function AuthFilesPage() {
       void loadFiles().catch(() => {});
     },
     isCurrentLayer ? 240_000 : null
+  );
+
+  const loadQuotaCooldowns = useCallback(async () => {
+    if (!managerServiceBase) {
+      setQuotaCooldowns((current) => (current.size === 0 ? current : new Map()));
+      return;
+    }
+    try {
+      const items = await usageServiceApi.getActiveQuotaCooldowns(managerServiceBase, managementKey);
+      const next = new Map<string, QuotaCooldownInfo>();
+      for (const item of items) {
+        if (!item.authFileName) continue;
+        const existing = next.get(item.authFileName);
+        if (!existing || (item.recoverAtMs ?? 0) > (existing.recoverAtMs ?? 0)) {
+          next.set(item.authFileName, item);
+        }
+      }
+      setQuotaCooldowns(next);
+    } catch {
+      // The cooldown badge is a derived hint; fail silently and keep the last known state.
+    }
+  }, [managerServiceBase, managementKey]);
+
+  useEffect(() => {
+    if (!isCurrentLayer || !managerServiceBase) return;
+    void loadQuotaCooldowns();
+  }, [isCurrentLayer, managerServiceBase, loadQuotaCooldowns]);
+
+  useInterval(
+    () => {
+      void loadQuotaCooldowns();
+    },
+    isCurrentLayer && managerServiceBase ? 60_000 : null
   );
 
   const existingTypes = useMemo(() => {
@@ -1255,6 +1292,7 @@ export function AuthFilesPage() {
                       codexStatusBadges={codexStatus?.badges ?? []}
                       codexNeedsReauth={codexStatus?.needsReauth ?? false}
                       antigravitySubscription={antigravitySubscriptions[file.name]}
+                      quotaCooldown={quotaCooldowns.get(file.name)}
                       onShowModels={showModels}
                       onReauth={(targetFile) =>
                         setCodexReauthTarget(createCodexReauthTargetFromAuthFile(targetFile))
