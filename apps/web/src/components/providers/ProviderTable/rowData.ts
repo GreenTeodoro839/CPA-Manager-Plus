@@ -88,8 +88,8 @@ function buildKeyConfigRow(
     key: `${kind}:${getProviderConfigKey(config, originalIndex)}`,
     kind,
     originalIndex,
-    label: maskApiKey(config.apiKey),
-    sortName: getKeyConfigSortName(config),
+    label: config.name?.trim() || maskApiKey(config.apiKey),
+    sortName: config.name?.trim() || getKeyConfigSortName(config),
     baseUrl: config.baseUrl ?? '',
     priority: config.priority,
     modelNames,
@@ -105,6 +105,7 @@ function buildKeyConfigRow(
     ).success,
     statusData: getProviderRecentStatusData(usageByProvider, kind, config.apiKey, config.baseUrl),
     haystack: buildHaystack([
+      config.name,
       config.apiKey,
       config.prefix,
       config.baseUrl,

@@ -28,6 +28,7 @@ const DISABLE_COOLING_FIELDS = ['disable-cooling', 'disableCooling', 'disable_co
 const COMMON_PROVIDER_KEY_FIELDS = [
   'api-key',
   'apiKey',
+  'name',
   ...AUTH_INDEX_FIELDS,
   'priority',
   'prefix',
@@ -462,6 +463,7 @@ const serializeProviderKey = (config: ProviderKeyConfig) => {
   if (authIndex) payload['auth-index'] = authIndex;
   if (config.priority !== undefined) payload.priority = config.priority;
   if (config.prefix?.trim()) payload.prefix = config.prefix.trim();
+  if (config.name?.trim()) payload.name = config.name.trim();
   if (config.baseUrl) payload['base-url'] = config.baseUrl;
   if (config.websockets !== undefined) payload.websockets = config.websockets;
   if (config.disableCooling !== undefined) payload['disable-cooling'] = config.disableCooling;
@@ -515,6 +517,7 @@ const serializeVertexKey = (config: ProviderKeyConfig) => {
   if (authIndex) payload['auth-index'] = authIndex;
   if (config.priority !== undefined) payload.priority = config.priority;
   if (config.prefix?.trim()) payload.prefix = config.prefix.trim();
+  if (config.name?.trim()) payload.name = config.name.trim();
   if (config.baseUrl) payload['base-url'] = config.baseUrl;
   if (config.proxyUrl) payload['proxy-url'] = config.proxyUrl;
   const headers = serializeHeaders(config.headers);
@@ -535,6 +538,7 @@ const serializeGeminiKey = (config: GeminiKeyConfig) => {
   if (authIndex) payload['auth-index'] = authIndex;
   if (config.priority !== undefined) payload.priority = config.priority;
   if (config.prefix?.trim()) payload.prefix = config.prefix.trim();
+  if (config.name?.trim()) payload.name = config.name.trim();
   if (config.baseUrl) payload['base-url'] = config.baseUrl;
   if (config.proxyUrl) payload['proxy-url'] = config.proxyUrl;
   if (config.disableCooling !== undefined) payload['disable-cooling'] = config.disableCooling;

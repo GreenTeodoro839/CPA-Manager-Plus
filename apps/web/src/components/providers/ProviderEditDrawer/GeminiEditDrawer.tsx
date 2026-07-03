@@ -36,6 +36,7 @@ type GeminiFormBaseline = ReturnType<typeof buildGeminiBaseline>;
 
 const buildEmptyForm = (): GeminiFormState => ({
   apiKey: '',
+  name: '',
   priority: undefined,
   prefix: '',
   baseUrl: '',
@@ -63,6 +64,7 @@ const normalizeModelEntries = (entries: Array<{ name: string; alias: string }>) 
 
 const buildGeminiBaseline = (form: GeminiFormState) => ({
   apiKey: String(form.apiKey ?? '').trim(),
+  name: String(form.name ?? '').trim(),
   authIndex: normalizeAuthIndex(form.authIndex) ?? '',
   priority:
     form.priority !== undefined && Number.isFinite(form.priority)
@@ -304,6 +306,7 @@ export function GeminiEditDrawer({
       }));
       const payload: GeminiKeyConfig = {
         apiKey: form.apiKey.trim(),
+        name: form.name?.trim() || undefined,
         priority: form.priority !== undefined ? Math.trunc(form.priority) : undefined,
         prefix: form.prefix?.trim() || undefined,
         baseUrl: form.baseUrl?.trim() || undefined,
@@ -435,6 +438,13 @@ export function GeminiEditDrawer({
               onChange={(e) => setForm((prev) => ({ ...prev, apiKey: e.target.value }))}
               disabled={disabled || saving}
               required
+            />
+            <Input
+              label={t('ai_providers.provider_name_label')}
+              placeholder={t('ai_providers.provider_name_placeholder')}
+              value={form.name ?? ''}
+              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              disabled={disabled || saving}
             />
             <Input
               label={t('ai_providers.gemini_base_url_label')}

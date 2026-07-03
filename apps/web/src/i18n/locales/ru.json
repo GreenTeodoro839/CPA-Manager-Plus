@@ -457,6 +457,8 @@
     "prefix_hint": "Если задано, обращайтесь к моделям как prefix/<model>, чтобы выбрать эту запись.",
     "priority_label": "Приоритет (необязательно):",
     "priority_hint": "Чем больше значение, тем выше приоритет. Оставьте пустым для значения по умолчанию (0).",
+    "provider_name_label": "Имя провайдера (необязательно):",
+    "provider_name_placeholder": "например: my-google-acct",
     "websockets_label": "WebSockets",
     "websockets_hint": "Включает WebSocket-подключение Responses API для этого файла входа.",
     "config_toggle_label": "Включено",

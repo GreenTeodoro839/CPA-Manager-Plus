@@ -49,6 +49,7 @@ const CODEX_TEST_TIMEOUT_MS = 20_000;
 
 const buildEmptyForm = (): ProviderFormState => ({
   apiKey: '',
+  name: '',
   priority: undefined,
   prefix: '',
   baseUrl: '',
@@ -73,6 +74,7 @@ const normalizeModelEntries = (entries: Array<{ name: string; alias: string }>) 
 
 const buildCodexBaseline = (form: ProviderFormState) => ({
   apiKey: String(form.apiKey ?? '').trim(),
+  name: String(form.name ?? '').trim(),
   authIndex: normalizeAuthIndex(form.authIndex) ?? '',
   priority:
     form.priority !== undefined && Number.isFinite(form.priority)
@@ -461,6 +463,7 @@ export function CodexEditDrawer({
     try {
       const payload: ProviderKeyConfig = {
         apiKey: form.apiKey.trim(),
+        name: form.name?.trim() || undefined,
         priority: form.priority !== undefined ? Math.trunc(form.priority) : undefined,
         prefix: form.prefix?.trim() || undefined,
         baseUrl: trimmedBaseUrl,
@@ -594,6 +597,13 @@ export function CodexEditDrawer({
               onChange={(e) => setForm((prev) => ({ ...prev, apiKey: e.target.value }))}
               disabled={disabled || saving}
               required
+            />
+            <Input
+              label={t('ai_providers.provider_name_label')}
+              placeholder={t('ai_providers.provider_name_placeholder')}
+              value={form.name ?? ''}
+              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              disabled={disabled || saving}
             />
             <Input
               label={t('ai_providers.codex_add_modal_url_label')}

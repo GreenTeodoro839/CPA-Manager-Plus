@@ -221,6 +221,9 @@ export function ProviderDetailDrawer({
           {row.kind !== 'openai' && (
             <FieldRow label={t('common.api_key')} value={maskApiKey(row.raw.apiKey)} />
           )}
+          {row.kind !== 'openai' && row.raw.name ? (
+            <FieldRow label={t('ai_providers.provider_name_label')} value={row.raw.name} />
+          ) : null}
           <FieldRow label={t('common.base_url')} value={row.baseUrl} />
           <FieldRow label={t('common.priority')} value={row.priority} />
           <FieldRow label={t('common.prefix')} value={row.raw.prefix} />

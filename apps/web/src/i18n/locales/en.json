@@ -457,6 +457,8 @@
     "prefix_hint": "When set, call models as prefix/<model> to target this entry.",
     "priority_label": "Priority (Optional):",
     "priority_hint": "Higher values are preferred. Leave empty for default (0).",
+    "provider_name_label": "Provider Name (Optional):",
+    "provider_name_placeholder": "e.g. my-google-acct",
     "websockets_label": "WebSockets",
     "websockets_hint": "Enable WebSocket transport for this login file.",
     "config_toggle_label": "Enabled",

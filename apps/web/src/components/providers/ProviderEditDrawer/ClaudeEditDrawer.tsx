@@ -45,6 +45,7 @@ const DEFAULT_ANTHROPIC_VERSION = '2023-06-01';
 
 const buildEmptyForm = (): ProviderFormState => ({
   apiKey: '',
+  name: '',
   authIndex: '',
   priority: undefined,
   prefix: '',
@@ -94,6 +95,7 @@ const areCloakConfigsEqual = (
 
 const buildClaudeBaseline = (form: ProviderFormState) => ({
   apiKey: String(form.apiKey ?? '').trim(),
+  name: String(form.name ?? '').trim(),
   authIndex: normalizeAuthIndex(form.authIndex) ?? '',
   priority:
     form.priority !== undefined && Number.isFinite(form.priority)
@@ -562,6 +564,7 @@ export function ClaudeEditDrawer({
     try {
       const payload: ProviderKeyConfig = {
         apiKey: form.apiKey.trim(),
+        name: form.name?.trim() || undefined,
         priority: form.priority !== undefined ? Math.trunc(form.priority) : undefined,
         prefix: form.prefix?.trim() || undefined,
         baseUrl: (form.baseUrl ?? '').trim() || undefined,
@@ -647,6 +650,13 @@ export function ClaudeEditDrawer({
               onChange={(e) => setForm((prev) => ({ ...prev, apiKey: e.target.value }))}
               disabled={saving || disabled || isTesting}
               required
+            />
+            <Input
+              label={t('ai_providers.provider_name_label')}
+              placeholder={t('ai_providers.provider_name_placeholder')}
+              value={form.name ?? ''}
+              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              disabled={saving || disabled || isTesting}
             />
             <Input
               label={t('ai_providers.claude_add_modal_url_label')}

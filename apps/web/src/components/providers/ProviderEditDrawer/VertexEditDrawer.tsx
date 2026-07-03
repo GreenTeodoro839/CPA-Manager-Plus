@@ -26,6 +26,7 @@ type VertexFormBaseline = ReturnType<typeof buildVertexBaseline>;
 
 const buildEmptyForm = (): VertexFormState => ({
   apiKey: '',
+  name: '',
   prefix: '',
   baseUrl: '',
   proxyUrl: '',
@@ -47,6 +48,7 @@ const normalizeModelEntries = (entries: Array<{ name: string; alias: string }>) 
 
 const buildVertexBaseline = (form: VertexFormState) => ({
   apiKey: String(form.apiKey ?? '').trim(),
+  name: String(form.name ?? '').trim(),
   priority: form.priority !== undefined && Number.isFinite(form.priority) ? Math.trunc(form.priority) : null,
   prefix: String(form.prefix ?? '').trim(),
   baseUrl: String(form.baseUrl ?? '').trim(),
@@ -162,6 +164,7 @@ export function VertexEditDrawer({ open, editIndex, disabled, onClose, onSaved }
     try {
       const payload: ProviderKeyConfig = {
         apiKey: form.apiKey.trim(),
+        name: form.name?.trim() || undefined,
         priority: form.priority !== undefined && Number.isFinite(form.priority) ? Math.trunc(form.priority) : undefined,
         prefix: form.prefix?.trim() || undefined,
         baseUrl: (form.baseUrl ?? '').trim() || undefined,
@@ -221,6 +224,9 @@ export function VertexEditDrawer({ open, editIndex, disabled, onClose, onSaved }
             <Input label={t('ai_providers.vertex_add_modal_key_label')} placeholder={t('ai_providers.vertex_add_modal_key_placeholder')}
               value={form.apiKey} onChange={(e) => setForm((prev) => ({ ...prev, apiKey: e.target.value }))}
               disabled={disabled || saving} required />
+            <Input label={t('ai_providers.provider_name_label')} placeholder={t('ai_providers.provider_name_placeholder')}
+              value={form.name ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              disabled={disabled || saving} />
             <Input label={t('ai_providers.vertex_add_modal_url_label')} placeholder={t('ai_providers.vertex_add_modal_url_placeholder')}
               value={form.baseUrl ?? ''} onChange={(e) => setForm((prev) => ({ ...prev, baseUrl: e.target.value }))}
               disabled={disabled || saving} required />

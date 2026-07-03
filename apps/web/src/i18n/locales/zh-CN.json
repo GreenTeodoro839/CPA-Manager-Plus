@@ -457,6 +457,8 @@
     "prefix_hint": "设置后可用 prefix/<model> 选择该条目。",
     "priority_label": "优先级 (可选):",
     "priority_hint": "数值越大优先级越高；留空表示默认（0）。",
+    "provider_name_label": "提供商名称 (可选):",
+    "provider_name_placeholder": "例如: my-google-acct",
     "websockets_label": "WebSockets",
     "websockets_hint": "为该认证文件开启 Responses API 的 websocket 传输。",
     "config_toggle_label": "启用",
